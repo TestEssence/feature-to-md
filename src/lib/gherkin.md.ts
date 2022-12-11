@@ -4,8 +4,10 @@ export class GherkinMarkdown {
     private readonly scenarioFooter: string;
     private readonly featureSummary: string;
     private readonly md: string = "";
-    private scenariosNumber: number = 0;
-    private tablesNumber: number = 0;
+    // @ts-ignore
+    private scenariosNumber;
+    // @ts-ignore
+    private tablesNumber;
     private featureAbstract: string = "";
     private ScenarioNameWildcard = "{{SCENARIO_NAME}}";
 
@@ -42,10 +44,10 @@ export class GherkinMarkdown {
         let previousScenarioName = "";
         let match;
         while ((match = this.regexpScenarioTitle.exec(text))) {
-            const scenarioType = match[4];
-            const scenarioName = match[5];
-            const scenarioTags = match[2];
-            const scenarioHeader = match[1];
+            const scenarioType = match[4] || "";
+            const scenarioName = match[5] || "";
+            const scenarioTags = match[2] || "";
+            const scenarioHeader = match[1] || "";
             const scenarioCounterText = this.shouldCountScenario
                 ? " " + scenarioCounter + ":"
                 : "";
@@ -119,8 +121,8 @@ export class GherkinMarkdown {
         let match = regexFeatureTags.exec(text);
         let tags = "";
         if (match) {
-            console.debug("// extractFeatureAbstract() Tags:" + match[1]);
-            tags = GherkinMarkdown.formatTags(match[1]);
+            console.debug("// extractFeatureAbstract() Tags:" + match[1]|| "");
+            tags = GherkinMarkdown.formatTags(match[1] || "");
             //remove tags
             result = text.replace(regexFeatureTags, "Feature:");
         }
@@ -128,8 +130,8 @@ export class GherkinMarkdown {
         const regexpFeatureDescription = /\s*?((Feature:.*?$)(.*?))(?=^\s*?(Background:|Scenario:|Rule|Given|When|#|@|"""))/gsim;
         match = regexpFeatureDescription.exec(result);
         if (match) {
-            console.debug("// featureAbstract match:" + match[1]);
-            this.featureAbstract = match[3] + "\n";
+            console.debug("// featureAbstract match:" + match[1] || "");
+            this.featureAbstract = match[3] || "" + "\n";
             result = result.replace(regexpFeatureDescription, GherkinMarkdown.isolateFromGherkin(tags + "# $2 {{FEATURE_DESCRIPTION}}"));
             console.debug("// extractFeatureAbstract() - Done.");
         } else {
@@ -143,7 +145,7 @@ export class GherkinMarkdown {
         const reg = new RegExp(/(@[\w-]+)/gim);
         let match;
         while ((match = reg.exec(tagText))) {
-            tags.push(match[1]);
+            tags.push(match[1] || "");
         }
         return tagText
             ? "<span class='gherkin_tag'>" + tags.join(", ") + "</span>\r\n"
@@ -169,7 +171,7 @@ export class GherkinMarkdown {
         do {
             match = tableRegex.exec(featureText);
             if (match) {
-                const tableText = match[1];
+                const tableText = match[1] || "";
                 featureText = featureText.replace(
                     tableText,
                     this.formatTable(tableText)
@@ -186,7 +188,7 @@ export class GherkinMarkdown {
         let formattedTable = "\r\n```\r\n" + tableRows[0] + "\r\n";
 
         formattedTable +=
-            GherkinMarkdown.getMdDividerRow(GherkinMarkdown.getColumnsNumber(tableRows[0])) + "\r\n";
+            GherkinMarkdown.getMdDividerRow(GherkinMarkdown.getColumnsNumber(tableRows[0] || "")) + "\r\n";
         for (let i = 1; i < tableRows.length; i++)
             formattedTable += tableRows[i] + "\r\n";
         return (formattedTable + "```gherkin\r\n")

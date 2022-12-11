@@ -1,4 +1,3 @@
-import {Config} from "./config";
 
 export interface MarkdownOutput extends BasicOutput {
     content: string;

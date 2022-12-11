@@ -3,7 +3,6 @@
 // --
 // Packages
 
-import arg from 'arg';
 import chalk from 'chalk';
 import { watch, WatchOptions } from 'chokidar';
 import getStdin from 'get-stdin';

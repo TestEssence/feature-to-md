@@ -2,7 +2,7 @@ import { GherkinMarkdown } from './lib/gherkin.md';
 import arg from 'arg';
 import { promises as fs } from 'fs';
 import { Config, defaultConfig } from './lib/config';
-import { getDir, readFile } from './lib/path';
+import { readFile } from './lib/path';
 import {getOutputFilePath} from "./lib/functions";
 import {MarkdownOutput} from "./lib/output";
 
@@ -77,17 +77,17 @@ export const featureToMd = async(input: { path: string } | { content: string },
     const featureFileContent =
         'content' in input
             ? input.content
-            : await readFile(input.path, args['--feature-file-encoding'] ?? config.feature_file_encoding);
+            : await readFile(input.path, args['--feature-file-encoding'] ?? mergedConfig.feature_file_encoding);
 
     // set output destination
-    if (config.dest === undefined) {
-        config.dest = 'path' in input ? getOutputFilePath(input.path) : 'stdout';
+    if (mergedConfig.dest === undefined) {
+        mergedConfig.dest = 'path' in input ? getOutputFilePath(input.path) : 'stdout';
     }
 
     const [markdown] = await Promise.all([convertFeatureToMd(featureFileContent,
-        config.dest,
-        config.scenarioFooterTemplate,
-        config.featureSummaryTemplate
+        mergedConfig.dest,
+        mergedConfig.scenarioFooterTemplate,
+        mergedConfig.featureSummaryTemplate
     )]);
 
     return markdown;
