@@ -1,10 +1,10 @@
 import { GherkinMarkdown } from './lib/gherkin.md';
-import arg from 'arg';
 import { promises as fs } from 'fs';
 import { Config, defaultConfig } from './lib/config';
 import { readFile } from './lib/path';
 import {getOutputFilePath} from "./lib/functions";
 import {MarkdownOutput} from "./lib/output";
+import arg from "arg";
 
 export const cliFlags = arg({
     '--help': Boolean,

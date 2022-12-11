@@ -1,9 +1,9 @@
-import test, { before } from 'ava';
-import { join, resolve } from 'path';
+import test  from 'ava';
+import { resolve } from 'path';
 import { execSync } from 'child_process';
-import { readFileSync, unlinkSync } from 'fs';
+import { readFileSync  } from 'fs';
 
-test('compile the feature.example to markdown using --basedir @cli', (t) => {
+test('compile the feature.example to markdown using --basedir', (t) => {
     const cmd = [
         resolve(__dirname, '..', '..', 'node_modules', '.bin', 'ts-node'), // ts-node binary
         resolve(__dirname, '..', 'cli'), // feature-to-md cli script (typescript)

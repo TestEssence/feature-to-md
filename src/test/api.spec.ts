@@ -1,5 +1,5 @@
 import { featureToMd } from '..';
-import test, { before } from 'ava';
+import test from 'ava';
 import { readFileSync } from 'fs';
 import {basename, resolve} from "path";
 

@@ -1,7 +1,7 @@
-import test, { before } from 'ava';
-import { posix, resolve, sep } from 'path';
+import test from 'ava';
+import { posix, sep } from 'path';
 import {getOutputFilePath} from "../lib/functions";
-import { readFile } from '../lib/path';
+
 test('getOutputFilePath should return the same path but with different extension', (t) => {
     const mdFilePath = posix.join('/', 'var', 'foo', 'bar.md');
 

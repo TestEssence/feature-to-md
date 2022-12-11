@@ -24,10 +24,10 @@
   "scripts": {
     "start": "tsc -p tsconfig.build.json --watch",
     "build": "tsc -p tsconfig.build.json",
-    "clean": "del dist",
+    "clean": "del /Q dist",
     "prepack": "npm run clean && npm run build",
     "lint": "xo",
-    "test": "xo && tsc -p tsconfig.type-test.json && nyc ava src/test/lib.spec.ts && ava src/test/api.spec.ts && ava src/test/cli.spec.ts --timeout=1m",
+    "test": "tsc -p tsconfig.type-test.json && nyc ava src/test/lib.spec.ts && ava src/test/api.spec.ts && ava src/test/cli.spec.ts --timeout=1m",
     "release": "npm test && npx standard-version --infile=changelog.md && git push --follow-tags origin master && npm publish",
     "loc": "npx cloc src --exclude-dir=test --by-file"
   },
@@ -45,8 +45,9 @@
   "homepage": "TestEssence/feature-to-md#readme",
   "dependencies": {
     "arg": "^5.0.2",
+    "iconv-lite": "^0.6.3",
     "listr": "^0.14.3",
-    "iconv-lite": "^0.6.3"
+    "semver": "^7.3.8"
   },
   "devDependencies": {
     "@types/listr": "0.14.4",
@@ -56,6 +57,7 @@
     "ava": "5.1.0",
     "husky": "8.0.2",
     "nyc": "15.1.0",
+    "prettier": "^2.8.1",
     "tap-xunit": "2.4.1",
     "ts-node": "10.9.1",
     "tsd": "0.25.0",
@@ -72,9 +74,9 @@
     "verbose": true
   },
   "xo": {
-    "prettier": true,
+    "prettier": false,
     "ignores": [
-      "src/test/mathjax"
+      "src/test/"
     ],
     "rules": {
       "@typescript-eslint/explicit-function-return-type": "off",
@@ -82,6 +84,7 @@
       "@typescript-eslint/no-implicit-any-catch": "off",
       "@typescript-eslint/no-var-requires": "off",
       "@typescript-eslint/prefer-readonly-parameter-types": "off",
+      "@typescript-eslint/indent": "off",
       "camelcase": "off",
       "capitalized-comments": "off",
       "no-await-in-loop": "off",
@@ -90,7 +93,9 @@
       "node/no-unsupported-features/es-syntax": "off",
       "unicorn/no-array-callback-reference": "off",
       "unicorn/no-fn-reference-in-iterator": "off",
-      "unicorn/string-content": "off"
+      "indent": "off",
+      "unicorn/string-content": "off",
+      "brace-style": "off"
     },
     "overrides": [
       {
