@@ -11,7 +11,7 @@ test('compile the feature.example to markdown using --basedir', (t) => {
         '--basedir',
         resolve(__dirname, 'features'),
     ].join(' ');
-
+    console.log('command: '+cmd);
     t.notThrows(() => execSync(cmd));
     t.notThrows(() => readFileSync(resolve(__dirname, 'features', 'example.feature'), 'utf-8'));
 });

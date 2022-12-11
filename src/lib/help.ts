@@ -1,9 +1,9 @@
 import chalk from 'chalk';
 
 const helpText = `
-  ${chalk.bold('$ feature-to-md')} [options] path/to/file.feature
+  ${chalk('$ feature-to-md')} [options] path/to/file.feature
 
-  ${chalk.dim.underline.bold('Options:')}
+  ${chalk.dim('Options:')}
 
 -h, --help ${chalk.dim('...............')} Output usage information
 -v, --version ${chalk.dim('............')} Output version
@@ -16,7 +16,7 @@ const helpText = `
 --feature-summary-template ${chalk.dim('............')} markdown (or html) snippet that is appended to the feature abstract
 
 
-  ${chalk.dim.underline.bold('Examples:')}
+  ${chalk.dim('Examples:')}
 
   ${chalk.gray('–')} Convert ./file.feature and save to ./file.md
 
