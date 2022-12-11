@@ -3,16 +3,13 @@
   "version": "1.0.0-beta.0",
   "description": "CLI tool for converting Feature files to Markdown.",
   "keywords": [
-    "feature2md",
-    "gherkin2md",
     "feature-to-md",
     "feature-to-markdown",
-    "gherkin-to-markdown",
-    "gherkin-to-md",
     "cli",
     "gherkin",
+    "feature",
+    "test-documentation",
     "markdown-generation",
-    "documentation",
     "given-when-then",
     "markdown"
   ],

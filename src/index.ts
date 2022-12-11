@@ -4,6 +4,7 @@ import { promises as fs } from 'fs';
 import { Config, defaultConfig } from './lib/config';
 import { getDir, readFile } from './lib/path';
 import {getOutputFilePath} from "./lib/functions";
+import {MarkdownOutput} from "./lib/output";
 
 export const cliFlags = arg({
     '--help': Boolean,
@@ -57,12 +58,12 @@ async function convertFeatureToMd(text: string,
         }
     }
 
-    return filename;
+    return  { filename: filename, content: markdown };
 }
 
 export const featureToMd = async(input: { path: string } | { content: string },
                                   config: Partial<Config> = {},
-                                  args: CliArgs = {} as CliArgs) => {
+                                  args: CliArgs = {} as CliArgs): Promise<MarkdownOutput> => {
     if (!hasContent(input) && !hasPath(input)) {
         throw new Error('The input is missing one of the properties "content" or "path".');
     }
@@ -91,6 +92,8 @@ export const featureToMd = async(input: { path: string } | { content: string },
 
     return markdown;
 }
+
+
 
 export interface PackageJson {
     engines: {
