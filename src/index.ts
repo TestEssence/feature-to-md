@@ -1,7 +1,24 @@
 import { GherkinMarkdown } from './lib/gherkin.md';
+import arg from 'arg';
 import { promises as fs } from 'fs';
 import { Config, defaultConfig } from './lib/config';
 import { getDir, readFile } from './lib/path';
+import {getOutputFilePath} from "./lib/functions";
+
+export const cliFlags = arg({
+    '--help': Boolean,
+    '--version': Boolean,
+    '--watch': Boolean,
+    '--watch-options': String,
+    '--basedir': String,
+    '--config-file': String,
+    '--feature-file-encoding': String,
+// aliases
+    '-h': '--help',
+    '-v': '--version',
+});
+
+type CliArgs = typeof cliFlags;
 
 type Input = ContentInput | PathInput;
 
@@ -43,18 +60,11 @@ async function convertFeatureToMd(text: string,
     return filename;
 }
 
-
-export async function featureToMd(input: Input, config: Partial<Config> = {}): Promise<string> {
+export const featureToMd = async(input: { path: string } | { content: string },
+                                  config: Partial<Config> = {},
+                                  args: CliArgs = {} as CliArgs) => {
     if (!hasContent(input) && !hasPath(input)) {
         throw new Error('The input is missing one of the properties "content" or "path".');
-    }
-
-    if (!config.basedir) {
-        config.basedir = 'path' in input ? getDir(input.path) : process.cwd();
-    }
-
-    if (!config.dest) {
-        config.dest = '';
     }
 
     const mergedConfig: Config = {
@@ -62,22 +72,25 @@ export async function featureToMd(input: Input, config: Partial<Config> = {}): P
         ...config,
     };
 
+    // @ts-ignore
     const featureFileContent =
         'content' in input
             ? input.content
-            : await readFile(input.path, 'utf-8');
+            : await readFile(input.path, args['--feature-file-encoding'] ?? config.feature_file_encoding);
+
+    // set output destination
+    if (config.dest === undefined) {
+        config.dest = 'path' in input ? getOutputFilePath(input.path) : 'stdout';
+    }
+
     const [markdown] = await Promise.all([convertFeatureToMd(featureFileContent,
-        "tbd.md",
+        config.dest,
         config.scenarioFooterTemplate,
         config.featureSummaryTemplate
     )]);
 
-
-
     return markdown;
 }
-
-export default featureToMd;
 
 export interface PackageJson {
     engines: {
