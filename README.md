@@ -8,6 +8,8 @@ Generates a Markdown document from Gherkin with the following features:
 - Document template (Header and Footer) customization
 - Feature Summary (Feature Summary Template) and Scenario Footer (Scenario Footer Template) customization
 
+You can use other converters like [md-to-pdf](https://www.npmjs.com/package/md-to-pdf) to convert the resulting markdown into pdf or other formats you like  
+
 ## Installation
 
 ```sh
@@ -39,4 +41,4 @@ feature-to-md [options] ./**/*.feature
 
 ## License
 
-[MIT](/license).
+[MIT](/LICENSE)
