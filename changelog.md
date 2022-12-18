@@ -4,12 +4,12 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### [1.0.5](/TestEssence/feature-to-md/compare/v1.0.4...v1.0.5) (2022-12-18)
 
-### [1.0.4](/TestEssence/feature-to-md/compare/v1.0.3...v1.0.4) (2022-12-18)
+### Bug Fixes
 
 ### [1.0.3](/TestEssence/feature-to-md/compare/v1.0.2...v1.0.3) (2022-12-18)
 
-### [1.0.2](/TestEssence/feature-to-md/compare/v1.0.1...v1.0.2) (2022-12-18)
-
+* **CLI** added targetDir option
+closes [#1](/TestEssence/feature-to-md/issues/1)
 
 ### Bug Fixes
 
