@@ -1,6 +1,6 @@
 {
   "name": "feature-to-md",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "CLI tool for converting Feature files to Markdown.",
   "keywords": [
     "feature-to-md",
