@@ -15,3 +15,16 @@ test('compile the feature.example to markdown using --basedir', (t) => {
     t.notThrows(() => execSync(cmd));
     t.notThrows(() => readFileSync(resolve(__dirname, 'features', 'example.feature'), 'utf-8'));
 });
+
+test('convert **/*.feature files, recursivelly', (t) => {
+    const cmd = [
+        resolve(__dirname, '..', '..', 'node_modules', '.bin', 'ts-node'), // ts-node binary
+        resolve(__dirname, '..', 'cli'), // feature-to-md cli script (typescript)
+        './**/*.feature', // files pattern to convert
+    ].join(' ');
+    console.log('command: '+cmd);
+    t.notThrows(() => execSync(cmd));
+    t.notThrows(() => readFileSync(resolve(__dirname, 'features', 'example.feature'), 'utf-8'));
+    t.notThrows(() => readFileSync(resolve(__dirname, 'features', 'subDir' ,'example.feature'), 'utf-8'));
+    t.notThrows(() => readFileSync(resolve(__dirname, 'features', 'subDir', 'subDir', 'example.feature'), 'utf-8'));
+});

@@ -8,6 +8,7 @@ import { watch, WatchOptions } from 'chokidar';
 import getStdin from 'get-stdin';
 import Listr from 'listr';
 import path from 'path';
+import { GlobSync } from 'glob';
 import { PackageJson } from '.';
 import { Config, defaultConfig } from './lib/config';
 import { help } from './lib/help';
@@ -41,11 +42,17 @@ async function main(args: typeof cliFlags, config: Config) {
         return help();
     }
 
+    if (!args._[0]) {
+        return help();
+    }
+
     /**
      * 1. Get input.
      */
 
-    const files = args._;
+    const globFiles = new GlobSync(args._[0]);
+
+    const files = globFiles.found;
 
     const stdin = await getStdin();
 
@@ -94,6 +101,7 @@ async function main(args: typeof cliFlags, config: Config) {
 
         return;
     }
+
 
     const getListrTask = (file: string) => ({
         title: `generating Markdown from ${chalk.underline(file)}`,
