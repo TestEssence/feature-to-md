@@ -28,7 +28,7 @@ main(cliFlags, defaultConfig).catch((error) => {
 // Define Main Function
 
 async function main(args: typeof cliFlags, config: Config) {
-    setProcessAndTermTitle('md-to-pdf');
+    setProcessAndTermTitle('feature-to-md');
 
     if (!validateNodeVersion()) {
         throw new Error('Please use a Node.js version that satisfies the version specified in the engines field.');
@@ -47,16 +47,18 @@ async function main(args: typeof cliFlags, config: Config) {
     }
 
     /**
-     * 1. Get input.
+     * 1. Get input. replacing windows-style file separator with posix one
      */
+    const pattern: string = args._[0].replace(/\\/g, '/');
+    const globFiles = new GlobSync(pattern);
 
-    const globFiles = new GlobSync(args._[0]);
 
     const files = globFiles.found;
 
     const stdin = await getStdin();
 
     if (files.length === 0 && !stdin) {
+        console.log('no files found for pattern: '+ pattern);
         return help();
     }
 
@@ -79,11 +81,11 @@ async function main(args: typeof cliFlags, config: Config) {
     }
 
     /**
-     * 3. Start the file server.
+     * 3. set up target directory.
      */
 
-    if (args['--basedir']) {
-        config.basedir = args['--basedir'];
+    if (args['--targetdir']) {
+        config.targetDir = args['--targetdir'];
     }
 
     /**

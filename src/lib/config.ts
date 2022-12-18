@@ -4,7 +4,7 @@ export const defaultConfig: Config = {
     featureSummaryTemplate: "",
     scenarioFooterTemplate: "",
     feature_file_encoding: "utf-8",
-    basedir: process.cwd()
+    targetDir: ""
 };
 
 /**
@@ -16,7 +16,7 @@ interface BasicConfig {
     /**
      * Base directory to be served by the file server.
      */
-    basedir: string;
+    targetDir?: string;
 
     /**
      * Optional destination path for the output file.

@@ -9,7 +9,7 @@ const helpText = `
 -v, --version ${chalk.dim('............')} Output version
 -w, --watch ${chalk.dim('..............')} Watch the current file(s) for changes
 --watch-options ${chalk.dim('..........')} Options for Chokidar's watch call
---basedir ${chalk.dim('................')} Base directory to be served by the file server
+--targetdir ${chalk.dim('................')} target directory for output files
 --config-file ${chalk.dim('............')} Path to a JSON or JS configuration file
 --feature-file-encoding ${chalk.dim('.......')} Set the file encoding for the feature file
 --scenario-footer-template ${chalk.dim('............')} markdown (or html) snippet that is inserted after each scenario 
@@ -30,9 +30,9 @@ const helpText = `
 
   ${chalk.cyan('$ feature-to-md ./**/*.feature')}
  
-  ${chalk.gray('–')} Convert path/to/file.md with a different base directory
+  ${chalk.gray('–')} Convert path/to/file.md with a different target directory (all files will be placed into the same directory)
 
- ${chalk.cyan('$ md-to-pdf path/to/file.md --basedir path')}
+ ${chalk.cyan('$ md-to-pdf path/to/file.md --targetdir path')}
 
 `;
 

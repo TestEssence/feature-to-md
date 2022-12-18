@@ -11,7 +11,7 @@ export const cliFlags = arg({
     '--version': Boolean,
     '--watch': Boolean,
     '--watch-options': String,
-    '--basedir': String,
+    '--targetdir': String,
     '--config-file': String,
     '--feature-file-encoding': String,
 // aliases
@@ -81,9 +81,18 @@ export const featureToMd = async(input: { path: string } | { content: string },
 
     // set output destination
     if (mergedConfig.dest === undefined) {
-        mergedConfig.dest = 'path' in input ? getOutputFilePath(input.path) : 'stdout';
+        if ('path' in input) {
+            console.log("path:"+input.path);
+          console.log(
+            "getOutputFilePath: " +
+              getOutputFilePath(mergedConfig.targetDir || "", input.path)
+          );
+        }
+        mergedConfig.dest = 'path' in input ? getOutputFilePath(mergedConfig.targetDir|| "", input.path) : 'stdout';
     }
 
+
+    console.log ("Destination: " + mergedConfig.dest);
     const [markdown] = await Promise.all([convertFeatureToMd(featureFileContent,
         mergedConfig.dest,
         mergedConfig.scenarioFooterTemplate,

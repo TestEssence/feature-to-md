@@ -8,8 +8,10 @@ export const setProcessAndTermTitle = (title: string) => {
 /**
  * Derive the output file path from a source file.
  */
-export const getOutputFilePath = (featureFilePath: string) => {
+export const getOutputFilePath = (targetDir: string, featureFilePath: string) => {
     const {dir, name} = parse(featureFilePath);
-
-    return join(dir, `${name}.md`);
+    if (targetDir.length === 0) {
+        return join(dir, `${name}.md`);
+    }
+    return join(targetDir, `${name}.md`);
 };
