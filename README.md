@@ -33,6 +33,7 @@ Options:
 
 -h, --help ............... Output usage information
 -v, --version ............ Output version
+--targetDir .............. Target directory for output files (note all files will be placed into the same directory  )
 --config-file ............ Path to a JSON or JS configuration file
 --scenario-footer-template ......... markdown (or html) snippet that is inserted after each scenario 
 --feature-summary-template ......... markdown (or html) snippet that is appended to the feature abstract 

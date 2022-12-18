@@ -102,4 +102,8 @@ dist
 
 # TernJS port file
 .tern-port
-/src/test/features/**/example.md
+/src/test/features/**/*.md
+/src/test/markdowns/*
+
+
+.idea/*
