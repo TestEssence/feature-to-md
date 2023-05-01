@@ -186,31 +186,33 @@ ${this.featureSummary}\r
             `|${this.linebreakPlaceholder}|`
         );
         const tableRegex = /^\s*(\|.*?\|)\s*$/gim;
-        let match;
-        do {
-            match = tableRegex.exec(featureText);
-            if (match) {
-                const tableText = match[1] || '';
+        const matches = [...featureText.matchAll(tableRegex)];
+        for (const match of matches) {
+            const tableText = match[1];
+            if (tableText !== undefined){
                 featureText = featureText.replace(
                     tableText,
                     this.formatTable(tableText)
                 );
                 this.tablesNumber++;
+            } else{
+                continue;
             }
-        } while (match);
+        }
         return featureText;
     }
 
     private formatTable(tableText: string) {
         const tableRows = tableText.split(this.linebreakPlaceholder);
-        if (tableRows.length == 0) {
+        if (tableRows.length === 0) {
             this.logger.debug('//table format seems to be broken...');
             return '';
         }
-        let formattedTable = "\r\n```\r\n" + tableRows[0] + this.lineBreak;
 
+        let formattedTable = "\r\n```\r\n" + tableRows[0] + this.lineBreak;
+        this.logger.debug(`table header: ${formattedTable}`);
         formattedTable +=
-            GherkinMarkdown.getMdDividerRow(GherkinMarkdown.getColumnsNumber(tableRows[0] || '')) + this.lineBreak;
+            GherkinMarkdown.getMdDividerRow(GherkinMarkdown.getColumnsNumber(tableRows[0] || '| |')) + this.lineBreak;
         for (let i = 1; i < tableRows.length; i++)
             formattedTable += `${tableRows[i]}${this.lineBreak}`;
         return (`${formattedTable}\`\`\`gherkin${this.lineBreak}`)
