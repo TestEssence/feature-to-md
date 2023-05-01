@@ -4,6 +4,7 @@ export class GherkinMarkdown {
     private readonly scenarioFooter: string;
     private readonly featureSummary: string;
     private readonly md: string = '';
+    private readonly lineBreak: string = '\r\n'; 
     // @ts-ignore
     private scenariosNumber;
     // @ts-ignore
@@ -22,7 +23,7 @@ export class GherkinMarkdown {
         scenarioFooter: string,
         featureSummary: string
     ) {
-        this.featureCode = featureCode;
+        this.featureCode = `${featureCode}${this.lineBreak}`;
         this.featureSummary = featureSummary;
         this.scenariosNumber = 0;
         this.tablesNumber = 0;
@@ -53,13 +54,13 @@ export class GherkinMarkdown {
                 : '';
             let newScenarioHeader =
                 `${GherkinMarkdown.formatTags(scenarioTags)}\r
-## ${scenarioType}${scenarioCounterText}${scenarioName}`;
+## ${scenarioType}${scenarioCounterText}${scenarioName}${this.lineBreak}`;
             if (scenarioCounter > 1 && this.scenarioFooter) {
                 const footer = this.scenarioFooter.replace(
                     this.ScenarioNameWildcard,
                     previousScenarioName
                 );
-                newScenarioHeader = "\r\n" + footer + "\r\n" + newScenarioHeader;
+                newScenarioHeader = this.lineBreak + footer + this.lineBreak + newScenarioHeader;
             }
 
             text = text.replace(
@@ -76,11 +77,11 @@ ${text}\`\`\``;
 
         text = text.replace(
             /^\s*(Background:.*?)$/gm,
-            GherkinMarkdown.isolateFromGherkin('## $1')
+            GherkinMarkdown.isolateFromGherkin(`## $1${this.lineBreak}`)
         );
         text = text.replace(
             /^\s*(Examples:.*?)$/gm,
-            GherkinMarkdown.isolateFromGherkin('### $1')
+            GherkinMarkdown.isolateFromGherkin(`### $1${this.lineBreak}`)
         );
         text = this.formatTables(text);
         // indent 'And' and 'But'
@@ -102,9 +103,9 @@ ${this.scenarioFooter.replace(
     }
 
     private static removeEmptyGherkinBlocks(text: string) {
-        text = text.replace(/^```gherkin\s*\r\n```/gim, '');
-        text = text.replace(/(^```gherkin\r\n)\r\n/gim, '$1');
-        text = text.replace(/\r\n(\r\n\r\n```)/gim, '$1');
+        text = text.replace(/^```gherkin\s*```/gim, '');
+        text = text.replace(/(^```gherkin$)\s+/gim, `$1\r\n`);
+        text = text.replace(/\s+(^```$)/gim, '\r\n$1\r\n');
         return text;
     }
 
@@ -150,7 +151,7 @@ ${text} \r
             tags.push(match[1] || '');
         }
         return tagText
-            ? "<span class='gherkin_tag'>" + tags.join(", ") + "</span>\r\n"
+            ? "<span class='gherkin_tag'>" + tags.join(", ") + `</span>\r\n`
             : '';
     }
 
@@ -193,13 +194,13 @@ ${this.featureSummary}\r
             console.debug('//table format seems to be broken...');
             return '';
         }
-        let formattedTable = "\r\n```\r\n" + tableRows[0] + "\r\n";
+        let formattedTable = "\r\n```\r\n" + tableRows[0] + this.lineBreak;
 
         formattedTable +=
-            GherkinMarkdown.getMdDividerRow(GherkinMarkdown.getColumnsNumber(tableRows[0] || '')) + "\r\n";
+            GherkinMarkdown.getMdDividerRow(GherkinMarkdown.getColumnsNumber(tableRows[0] || '')) + this.lineBreak;
         for (let i = 1; i < tableRows.length; i++)
-            formattedTable += `${tableRows[i]}\r\n`;
-        return (`${formattedTable}\`\`\`gherkin\r\n`)
+            formattedTable += `${tableRows[i]}${this.lineBreak}`;
+        return (`${formattedTable}\`\`\`gherkin${this.lineBreak}`)
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;');
     }
