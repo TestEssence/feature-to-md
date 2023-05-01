@@ -37,6 +37,7 @@ Options:
 --config-file ............ Path to a JSON or JS configuration file
 --scenario-footer-template ......... markdown (or html) snippet that is inserted after each scenario 
 --feature-summary-template ......... markdown (or html) snippet that is appended to the feature abstract 
+--debug ......... turn debug mode on
 ```
 
 The markdown is generated into the same directory as the source file and uses the same filename (with .md extension) by default.

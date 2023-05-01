@@ -3,6 +3,7 @@ import {parse, resolve} from 'path';
 import { execSync } from 'child_process';
 import { readFileSync, unlinkSync } from 'fs';
 import { GlobSync } from 'glob';
+import { logger } from "../lib/logger";
 
 const TargetDir: string = 'markdowns';
 const FeaturesDir: string = 'features';
@@ -28,13 +29,13 @@ test.beforeEach(() => {
 
 test('convert "example.feature" into markdown, using --targetdir', async (t) => {
   const cmd = [
-    resolve(__dirname, "..", "..", "node_modules", ".bin", "ts-node"), // ts-node binary
+    'ts-node', // ts-node binary
     resolve(__dirname, "..", "cli"), // feature-to-md cli script (typescript)
     resolve(__dirname, "features", "example.feature"), // file to convert
-    /*'--targetdir',
-        resolve(__dirname, TargetDir),*/
+    '--targetdir',
+        resolve(__dirname, TargetDir),
   ].join(" ");
-  console.log("command: " + cmd);
+  logger.info("command: " + cmd);
   t.notThrows(() => execSync(cmd));
   await new Promise((r) => setTimeout(r, 500));
   t.notThrows(() =>
@@ -46,11 +47,11 @@ test('convert "**/*.feature" files, recursively', async (t) => {
   const filesPatternToConvert =
     resolve(__dirname, FeaturesDir) + "/**/*.feature";
   const cmd = [
-    resolve(__dirname, "..", "..", "node_modules", ".bin", "ts-node"), // ts-node binary
+    'ts-node', // ts-node binary
     resolve(__dirname, "..", "cli"), // feature-to-md cli script (typescript)
     filesPatternToConvert,
   ].join(" ");
-  console.log("command: " + cmd);
+  logger.info("command: " + cmd);
   t.notThrows(() => execSync(cmd));
   await new Promise((r) => setTimeout(r, 500));
   t.notThrows(() =>
@@ -71,23 +72,24 @@ test('convert "**/*.feature" files, recursively', async (t) => {
 });
 
 
-test('convert "**/*.feature" files, recursively,  using --targetdir', (t) => {
-    console.log("files from recursive dirs will be placed inot the single -targetDir directory");
+test('convert "**/*.feature" files, recursively,  using --targetdir with --debug loging', (t) => {
+    logger.info("files from recursive dirs will be placed inot the single -targetDir directory");
     const filesPatternToConvert = resolve(__dirname, FeaturesDir) + '/**/*.feature';
     const cmd = [
-        resolve(__dirname, '..', '..', 'node_modules', '.bin', 'ts-node'), // ts-node binary
+        'ts-node', // ts-node binary
         resolve(__dirname, '..', 'cli'), // feature-to-md cli script (typescript)
         filesPatternToConvert,
         '--targetdir',
         resolve(__dirname, TargetDir),
+        '--debug',
     ].join(' ');
-    console.log('command: '+cmd);
+    logger.info('command: '+cmd);
     t.notThrows(() => execSync(cmd));
     const globFiles = new GlobSync(filesPatternToConvert.replace(/\\/g, '/'));
     const files = globFiles.found.map(name=> resolve(__dirname,TargetDir, parse(name).name +'.md'));
     t.truthy(files.length>0)
     files.forEach((file) => {
-        console.log('assert file:' +file);
+        logger.info('assert file:' +file);
         t.notThrows(() =>readFileSync(file,"utf-8"));
     });
 

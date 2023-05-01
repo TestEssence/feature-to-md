@@ -5,7 +5,7 @@ export const defaultConfig: Config = {
     scenarioFooterTemplate: "",
     feature_file_encoding: "utf-8",
     targetDir: "",
-    extractTags: false, 
+    debugMode: false,
 };
 
 /**
@@ -28,7 +28,7 @@ interface BasicConfig {
     feature_file_encoding: string;
 
     featureSummaryTemplate: string;
-    extractTags: boolean;
+    debugMode: boolean;
 
     /**
      * Options to pass to Chokidar's `watch` call.

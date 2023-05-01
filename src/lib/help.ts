@@ -14,6 +14,7 @@ const helpText = `
 --feature-file-encoding ${chalk.dim('.......')} Set the file encoding for the feature file
 --scenario-footer-template ${chalk.dim('............')} markdown (or html) snippet that is inserted after each scenario 
 --feature-summary-template ${chalk.dim('............')} markdown (or html) snippet that is appended to the feature abstract
+-d, --debug ${chalk.dim('..............')} Watch the current file(s) for changes
 
 
   ${chalk.dim('Examples:')}
