@@ -5,6 +5,7 @@ import { readFile } from './lib/path';
 import {getOutputFilePath} from "./lib/functions";
 import {MarkdownOutput} from "./lib/output";
 import arg from "arg";
+import { logger } from './lib/logger';
 
 export const cliFlags = arg({
     '--help': Boolean,
@@ -14,6 +15,7 @@ export const cliFlags = arg({
     '--targetdir': String,
     '--config-file': String,
     '--feature-file-encoding': String,
+    '--debug': Boolean,
 // aliases
     '-h': '--help',
     '-v': '--version',
@@ -46,7 +48,8 @@ async function convertFeatureToMd(text: string,
     let gherkin = new GherkinMarkdown(
         text,
         scenarioFooterTemplate || "",
-        featureSummaryTemplate || ""
+        featureSummaryTemplate || "", 
+        logger
     );
     let markdown =  gherkin.getMarkdown();
 
@@ -67,12 +70,12 @@ export const featureToMd = async(input: { path: string } | { content: string },
     if (!hasContent(input) && !hasPath(input)) {
         throw new Error('The input is missing one of the properties "content" or "path".');
     }
-
     const mergedConfig: Config = {
         ...defaultConfig,
         ...config,
     };
 
+    logger.level = args['--debug'] || config.debugMode ? "debug" : "info";
     // @ts-ignore
     const featureFileContent =
         'content' in input
@@ -82,8 +85,8 @@ export const featureToMd = async(input: { path: string } | { content: string },
     // set output destination
     if (mergedConfig.dest === undefined) {
         if ('path' in input) {
-            console.log("path:"+input.path);
-          console.log(
+            logger.info("path:"+input.path);
+            logger.debug(
             "getOutputFilePath: " +
               getOutputFilePath(mergedConfig.targetDir || "", input.path)
           );
@@ -92,7 +95,7 @@ export const featureToMd = async(input: { path: string } | { content: string },
     }
 
 
-    console.log ("Destination: " + mergedConfig.dest);
+    logger.debug ("Destination: " + mergedConfig.dest);
     const [markdown] = await Promise.all([convertFeatureToMd(featureFileContent,
         mergedConfig.dest,
         mergedConfig.scenarioFooterTemplate,

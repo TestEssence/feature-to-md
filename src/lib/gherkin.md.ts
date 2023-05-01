@@ -1,3 +1,14 @@
+/**
+ * SimpleLogger implements base logger funtion to provide an ability to subsutute console with winston loggger 
+ */
+interface SimpleLogger {
+        debug(...data: any[]): void;
+        error(...data: any[]): void;
+        info(...data: any[]): void;
+        log(...data: any[]): void;
+        warn(...data: any[]): void;
+} 
+
 export class GherkinMarkdown {
     private shouldCountScenario: boolean = false;
     private readonly featureCode: string;
@@ -10,6 +21,7 @@ export class GherkinMarkdown {
     private tablesNumber;
     private featureAbstract: string = '';
     private ScenarioNameWildcard = '{{SCENARIO_NAME}}';
+    private logger: SimpleLogger;
 
     private regexpScenarioTitle =
         //   /(^\s*(Rule:|Background:|Scenario:|Scenario Outline:)(.*?)$)/gim;
@@ -20,8 +32,10 @@ export class GherkinMarkdown {
     constructor(
         featureCode: string,
         scenarioFooter: string,
-        featureSummary: string
+        featureSummary: string,
+        logger:SimpleLogger = console,
     ) {
+        this.logger = logger;
         this.featureCode = featureCode;
         this.featureSummary = featureSummary;
         this.scenariosNumber = 0;
@@ -68,7 +82,6 @@ export class GherkinMarkdown {
             );
             scenarioCounter++;
             previousScenarioName = scenarioName;
-            //console.log(match[1]);
         }
         this.scenariosNumber = scenarioCounter - 1;
         text = `\`\`\`gherkin\r
@@ -118,12 +131,12 @@ ${text} \r
 
     private extractFeatureAbstract(text: string) {
         let result = text;
-        console.debug('// extractFeatureAbstract()');
+        this.logger.debug('// extractFeatureAbstract()');
         const regexFeatureTags = /^((\s*@.*?)*)\s*?Feature:/gs;
         let match = regexFeatureTags.exec(text);
         let tags = '';
         if (match) {
-            console.debug(`// extractFeatureAbstract() Tags:${match[1]}` || '');
+            this.logger.debug(`// extractFeatureAbstract() Tags:${match[1]}` || '');
             tags = GherkinMarkdown.formatTags(match[1] || '');
             //remove tags
             result = text.replace(regexFeatureTags, 'Feature:');
@@ -132,12 +145,12 @@ ${text} \r
         const regexpFeatureDescription = /\s*?((Feature:.*?$)(.*?))(?=^\s*?(Background:|Scenario:|Rule|Given|When|#|@|''"))/gsim;
         match = regexpFeatureDescription.exec(result);
         if (match) {
-            console.debug("// featureAbstract match:" + match[1] || '');
+            this.logger.debug("// featureAbstract match:" + match[1] || '');
             this.featureAbstract = match[3] || '' + "\n";
             result = result.replace(regexpFeatureDescription, GherkinMarkdown.isolateFromGherkin(tags + "# $2 {{FEATURE_DESCRIPTION}}"));
-            console.debug("// extractFeatureAbstract() - Done.");
+            this.logger.debug("// extractFeatureAbstract() - Done.");
         } else {
-            console.debug("Feature Prefix not found");
+            this.logger.debug("Feature Prefix not found");
         }
         return result;
     }
@@ -190,7 +203,7 @@ ${this.featureSummary}\r
     private formatTable(tableText: string) {
         const tableRows = tableText.split(this.linebreakPlaceholder);
         if (tableRows.length == 0) {
-            console.debug('//table format seems to be broken...');
+            this.logger.debug('//table format seems to be broken...');
             return '';
         }
         let formattedTable = "\r\n```\r\n" + tableRows[0] + "\r\n";
