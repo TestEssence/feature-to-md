@@ -50,10 +50,13 @@ async function main(args: typeof cliFlags, config: Config) {
      * 1. Get input. replacing windows-style file separator with posix one
      */
     const pattern: string = args._[0].replace(/\\/g, '/');
+    console.info(`search pattern: ${pattern}`);
     const globFiles = new GlobSync(pattern);
 
 
     const files = globFiles.found;
+
+    console.info(`Files found: ${files}`);
 
     const stdin = await getStdin();
 
@@ -61,6 +64,8 @@ async function main(args: typeof cliFlags, config: Config) {
         console.log('no files found for pattern: '+ pattern);
         return help();
     }
+
+
 
     /**
      * 2. Read config file and merge it into the config object.

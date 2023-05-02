@@ -15,6 +15,3 @@ Feature: Emty table cell
     And  someone uses empty  cell table for unknown reason:
     | |
     Then "feature-to-md" DOES not hang
-
-    When the requested function is invoked with <input>
-    Then the result is <output>

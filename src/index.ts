@@ -44,12 +44,14 @@ const hasPath = (input: Input): input is PathInput => 'path' in input;
 async function convertFeatureToMd(text: string,
                                   filename: string,
                                   scenarioFooterTemplate: string | undefined,
-                                  featureSummaryTemplate: string | undefined){
+                                  featureSummaryTemplate: string | undefined,
+                                  highlightTags:boolean){
     let gherkin = new GherkinMarkdown(
         text,
         scenarioFooterTemplate || "",
         featureSummaryTemplate || "", 
-        logger
+        logger,
+        highlightTags
     );
     let markdown =  gherkin.getMarkdown();
 
@@ -99,7 +101,8 @@ export const featureToMd = async(input: { path: string } | { content: string },
     const [markdown] = await Promise.all([convertFeatureToMd(featureFileContent,
         mergedConfig.dest,
         mergedConfig.scenarioFooterTemplate,
-        mergedConfig.featureSummaryTemplate
+        mergedConfig.featureSummaryTemplate,
+        mergedConfig.highlightTags
     )]);
 
     return markdown;

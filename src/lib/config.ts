@@ -6,6 +6,7 @@ export const defaultConfig: Config = {
     feature_file_encoding: "utf-8",
     targetDir: "",
     debugMode: false,
+    highlightTags: true,
 };
 
 /**
@@ -29,7 +30,7 @@ interface BasicConfig {
 
     featureSummaryTemplate: string;
     debugMode: boolean;
-
+    highlightTags: boolean;
     /**
      * Options to pass to Chokidar's `watch` call.
      *
