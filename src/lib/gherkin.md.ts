@@ -23,6 +23,7 @@ export class GherkinMarkdown {
     private featureAbstract: string = '';
     private ScenarioNameWildcard = '{{SCENARIO_NAME}}';
     private logger: SimpleLogger;
+    private highlightTags: boolean; 
 
     private regexpScenarioTitle =
         //   /(^\s*(Rule:|Background:|Scenario:|Scenario Outline:)(.*?)$)/gim;
@@ -35,13 +36,16 @@ export class GherkinMarkdown {
         scenarioFooter: string,
         featureSummary: string,
         logger:SimpleLogger = console,
+        highlightTags:boolean = false
     ) {
         this.logger = logger;
+        this.highlightTags = highlightTags; 
         this.featureCode = `${featureCode}${this.lineBreak}`;
         this.featureSummary = featureSummary;
         this.scenariosNumber = 0;
         this.tablesNumber = 0;
         this.scenarioFooter = scenarioFooter;
+        this.logger.debug(`highlightTags=${this.highlightTags}`);
         this.md = this.convertToMarkdown();
     }
 
@@ -57,17 +61,17 @@ export class GherkinMarkdown {
         text = this.extractFeatureAbstract(text);
         let scenarioCounter = 1;
         let previousScenarioName = '';
-        let match;
-        while ((match = this.regexpScenarioTitle.exec(text))) {
+        const matches = [...text.matchAll(this.regexpScenarioTitle)];
+        for (const match of matches) {
             const scenarioType = match[4] || '';
             const scenarioName = match[5] || '';
-            const scenarioTags = match[2] || '';
+            const scenarioTags = match[2]?.trim() || '';
             const scenarioHeader = match[1] || '';
             const scenarioCounterText = this.shouldCountScenario
                 ? ` ${scenarioCounter}:`
                 : '';
             let newScenarioHeader =
-                `${GherkinMarkdown.formatTags(scenarioTags)}\r
+                `${this.highlightTags?GherkinMarkdown.formatTags(scenarioTags):''}\r
 ## ${scenarioType}${scenarioCounterText}${scenarioName}${this.lineBreak}`;
             if (scenarioCounter > 1 && this.scenarioFooter) {
                 const footer = this.scenarioFooter.replace(
@@ -76,7 +80,10 @@ export class GherkinMarkdown {
                 );
                 newScenarioHeader = this.lineBreak + footer + this.lineBreak + newScenarioHeader;
             }
-
+            if (!this.highlightTags){
+                newScenarioHeader =  newScenarioHeader + GherkinMarkdown.wrapAsGherkin(scenarioTags);
+            }
+            this.logger.debug(`Processing scenario {name: '${scenarioName.trim()}', tags: '${scenarioTags}'}`);
             text = text.replace(
                 scenarioHeader,
                 GherkinMarkdown.isolateFromGherkin(newScenarioHeader)
@@ -85,8 +92,7 @@ export class GherkinMarkdown {
             previousScenarioName = scenarioName;
         }
         this.scenariosNumber = scenarioCounter - 1;
-        text = `\`\`\`gherkin\r
-${text}\`\`\``;
+        text = GherkinMarkdown.wrapAsGherkin(text);
 
         text = text.replace(
             /^\s*(Background:.*?)$/gm,
@@ -116,9 +122,12 @@ ${this.scenarioFooter.replace(
     }
 
     private static removeEmptyGherkinBlocks(text: string) {
-        text = text.replace(/^```gherkin\s*```/gim, '');
-        text = text.replace(/(^```gherkin$)\s+/gim, `$1\r\n`);
-        text = text.replace(/\s+(^```$)/gim, '\r\n$1\r\n');
+        text = text.replaceAll(/[\r\n]+/gi, '\r\n');
+        text = text.replaceAll(/(^```gherkin$)\s+/gim, `$1\r\n`); // remove empty lines within gherkin
+        text = text.replaceAll(/\s+(^```$)/gim, '\r\n$1\r\n');
+        text = text.replaceAll(/^```gherkin\s*```/gim, ''); // remove empty blocks
+        text = text.replaceAll(/^```\s*```gherkin/gim, ''); // combine adjanced blocks 
+       
         return text;
     }
 
@@ -130,14 +139,21 @@ ${text} \r
 `;
     }
 
+    private static wrapAsGherkin(text: string) {
+        return `\r
+\`\`\`gherkin\r
+${text} \r
+\`\`\`\r
+`;
+    }
+
     private extractFeatureAbstract(text: string) {
         let result = text;
-        this.logger.debug('// extractFeatureAbstract()');
         const regexFeatureTags = /^((\s*@.*?)*)\s*?Feature:/gs;
         let match = regexFeatureTags.exec(text);
         let tags = '';
         if (match) {
-            this.logger.debug(`// extractFeatureAbstract() Tags:${match[1]}` || '');
+            this.logger.debug(`Feature Tags:${match[1]}` || '');
             tags = GherkinMarkdown.formatTags(match[1] || '');
             //remove tags
             result = text.replace(regexFeatureTags, 'Feature:');
@@ -146,12 +162,10 @@ ${text} \r
         const regexpFeatureDescription = /\s*?((Feature:.*?$)(.*?))(?=^\s*?(Background:|Scenario:|Rule|Given|When|#|@|''"))/gsim;
         match = regexpFeatureDescription.exec(result);
         if (match) {
-            this.logger.debug("// featureAbstract match:" + match[1] || '');
             this.featureAbstract = match[3] || '' + "\n";
             result = result.replace(regexpFeatureDescription, GherkinMarkdown.isolateFromGherkin(tags + "# $2 {{FEATURE_DESCRIPTION}}"));
-            this.logger.debug("// extractFeatureAbstract() - Done.");
         } else {
-            this.logger.debug("Feature Prefix not found");
+            this.logger.debug("Feature Abstract not found");
         }
         return result;
     }
@@ -205,12 +219,11 @@ ${this.featureSummary}\r
     private formatTable(tableText: string) {
         const tableRows = tableText.split(this.linebreakPlaceholder);
         if (tableRows.length === 0) {
-            this.logger.debug('//table format seems to be broken...');
+            this.logger.debug('No table rows found. Table format is broken');
             return '';
         }
 
         let formattedTable = "\r\n```\r\n" + tableRows[0] + this.lineBreak;
-        this.logger.debug(`table header: ${formattedTable}`);
         formattedTable +=
             GherkinMarkdown.getMdDividerRow(GherkinMarkdown.getColumnsNumber(tableRows[0] || '| |')) + this.lineBreak;
         for (let i = 1; i < tableRows.length; i++)

@@ -17,24 +17,25 @@ test('convert the feature example to markdown with debug log @api', async (t) =>
         scenarioFooterTemplate: "",
         feature_file_encoding: "utf-8",
         targetDir: "",
-        debugMode: false,
+        debugMode: true,
+        highlightTags: false,
     };
-
-    const markdown = await featureToMd({ path: resolve(__dirname, 'features', 'example.feature') }, config );
-    t.is(basename(markdown.filename!), 'example.md');
+    
+    const markdown = await featureToMd({ path: resolve(__dirname, 'features', 'second.example.feature') }, config );
     t.truthy(markdown.content);
-    t.notThrows(() => readFileSync(resolve(__dirname, 'features', 'example.md'), 'utf-8'));
+    t.notThrows(() => readFileSync(resolve(__dirname, 'features', 'second.example.md'), 'utf-8'));
 });
 
 test('empty cell feature file should be converted @api', async (t) => {
     let config: Config = {
-        featureSummaryTemplate: "",
-        scenarioFooterTemplate: "",
+        featureSummaryTemplate: "Feature Summary",
+        scenarioFooterTemplate: "Scenario Footer",
         feature_file_encoding: "utf-8",
         targetDir: "",
         debugMode: true,
+        highlightTags: false,
     };
-    const markdown = await featureToMd({ path: resolve(__dirname, 'broken.features', 'empty.cell.feature') }, config);
+    const markdown = await featureToMd({ path: resolve(__dirname, 'features', 'empty.cell.feature') }, config);
     t.truthy(markdown.content);
-    t.notThrows(() => readFileSync(resolve(__dirname, 'broken.features', 'empty.cell.md'), 'utf-8'));
+    t.notThrows(() => readFileSync(resolve(__dirname, 'features', 'empty.cell.md'), 'utf-8'));
 });

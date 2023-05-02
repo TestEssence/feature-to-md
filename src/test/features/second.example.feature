@@ -1,6 +1,12 @@
 @example
-Feature: Gherkin example
-  This example is used for feature-to-md testing
+Feature: Second Gherkin Example
+
+  *This example is used for feature-to-md testing*
+  | makrdown table |
+  | -- |
+  | one |
+  | one |
+  | one |
 
   Background: setup
     Given setup is set up
@@ -21,17 +27,13 @@ Feature: Gherkin example
       | three   | 7even    |
 
 @one @two
-  Scenario: One two three 
+  Scenario Outline: One two three 
     Given one
     When two
       And three
     Then six
-
-
-
-  @example @scenario @four
-  Scenario: One two three four
-    Given one
-    When two
-      And three
-    Then six
+Examples: inputs/outputs
+      | <input> | <output> |
+      | one     | two      |
+      | two     | "three"  |
+      | three   | 7even    |
